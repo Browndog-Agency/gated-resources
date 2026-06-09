@@ -23,7 +23,6 @@ class Plugin {
 		$protected_files->register( $gate );
 		$gate->register();
 
-		// Enabled in Task 14 once the Templates class exists:
-		// add_filter( 'template_include', array( new Templates(), 'route' ) );
+		add_filter( 'template_include', array( new Templates(), 'route' ) );
 	}
 }
