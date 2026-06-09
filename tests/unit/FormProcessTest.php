@@ -3,6 +3,9 @@ namespace BrownDog\GatedResources\Tests;
 
 use Brain\Monkey\Functions;
 use BrownDog\GatedResources\Form;
+use BrownDog\GatedResources\Turnstile;
+use BrownDog\GatedResources\HubSpot;
+use BrownDog\GatedResources\Gate;
 
 final class FormProcessTest extends GR_TestCase {
 
@@ -26,7 +29,7 @@ final class FormProcessTest extends GR_TestCase {
 
 	public function test_honeypot_filled_fails() {
 		Functions\when( '__' )->returnArg( 1 );
-		$form = new Form( \Mockery::mock(), \Mockery::mock(), \Mockery::mock() );
+		$form = new Form( \Mockery::mock( Turnstile::class ), \Mockery::mock( HubSpot::class ), \Mockery::mock( Gate::class ) );
 		$res  = $form->process( $this->input( array( 'hp' => 'bot' ) ) );
 		$this->assertFalse( $res['ok'] );
 		$this->assertSame( 'spam', $res['code'] );
@@ -37,11 +40,11 @@ final class FormProcessTest extends GR_TestCase {
 		Functions\when( 'is_email' )->justReturn( true );
 		Functions\when( 'get_transient' )->justReturn( 0 );
 		Functions\when( 'set_transient' )->justReturn( true );
-		$turnstile = \Mockery::mock();
+		$turnstile = \Mockery::mock( Turnstile::class );
 		$turnstile->shouldReceive( 'verify' )->andReturn( false );
-		$hubspot = \Mockery::mock();
+		$hubspot = \Mockery::mock( HubSpot::class );
 		$hubspot->shouldNotReceive( 'submit' );
-		$gate = \Mockery::mock();
+		$gate = \Mockery::mock( Gate::class );
 
 		$res = ( new Form( $turnstile, $hubspot, $gate ) )->process( $this->input() );
 		$this->assertFalse( $res['ok'] );
@@ -53,10 +56,10 @@ final class FormProcessTest extends GR_TestCase {
 		Functions\when( 'is_email' )->justReturn( false );
 		Functions\when( 'get_transient' )->justReturn( 0 );
 		Functions\when( 'set_transient' )->justReturn( true );
-		$turnstile = \Mockery::mock();
+		$turnstile = \Mockery::mock( Turnstile::class );
 		$turnstile->shouldReceive( 'verify' )->andReturn( true );
 
-		$res = ( new Form( $turnstile, \Mockery::mock(), \Mockery::mock() ) )
+		$res = ( new Form( $turnstile, \Mockery::mock( HubSpot::class ), \Mockery::mock( Gate::class ) ) )
 			->process( $this->input( array( 'email' => 'nope' ) ) );
 		$this->assertFalse( $res['ok'] );
 		$this->assertSame( 'invalid', $res['code'] );
@@ -68,11 +71,11 @@ final class FormProcessTest extends GR_TestCase {
 		Functions\when( 'is_wp_error' )->justReturn( true );
 		Functions\when( 'get_transient' )->justReturn( 0 );
 		Functions\when( 'set_transient' )->justReturn( true );
-		$turnstile = \Mockery::mock();
+		$turnstile = \Mockery::mock( Turnstile::class );
 		$turnstile->shouldReceive( 'verify' )->andReturn( true );
-		$hubspot = \Mockery::mock();
+		$hubspot = \Mockery::mock( HubSpot::class );
 		$hubspot->shouldReceive( 'submit' )->andReturn( new \WP_Error( 'x', 'fail' ) );
-		$gate = \Mockery::mock();
+		$gate = \Mockery::mock( Gate::class );
 		$gate->shouldNotReceive( 'create_unlock' );
 
 		$res = ( new Form( $turnstile, $hubspot, $gate ) )->process( $this->input() );
@@ -86,11 +89,11 @@ final class FormProcessTest extends GR_TestCase {
 		Functions\when( 'is_wp_error' )->justReturn( false );
 		Functions\when( 'get_transient' )->justReturn( 0 );
 		Functions\when( 'set_transient' )->justReturn( true );
-		$turnstile = \Mockery::mock();
+		$turnstile = \Mockery::mock( Turnstile::class );
 		$turnstile->shouldReceive( 'verify' )->andReturn( true );
-		$hubspot = \Mockery::mock();
+		$hubspot = \Mockery::mock( HubSpot::class );
 		$hubspot->shouldReceive( 'submit' )->andReturn( true );
-		$gate = \Mockery::mock();
+		$gate = \Mockery::mock( Gate::class );
 		$gate->shouldReceive( 'create_unlock' )->once()->andReturn( array( 'token' => 't', 'expires' => 999 ) );
 
 		$res = ( new Form( $turnstile, $hubspot, $gate ) )->process( $this->input() );

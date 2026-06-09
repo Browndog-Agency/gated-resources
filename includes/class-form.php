@@ -7,7 +7,7 @@ class Form {
 	private $hubspot;
 	private $gate;
 
-	public function __construct( $turnstile = null, $hubspot = null, $gate = null ) {
+	public function __construct( Turnstile $turnstile, HubSpot $hubspot, Gate $gate ) {
 		$this->turnstile = $turnstile;
 		$this->hubspot   = $hubspot;
 		$this->gate      = $gate;
@@ -26,17 +26,27 @@ class Form {
 		if ( ! $ip ) {
 			return false;
 		}
-		$ttl   = defined( 'MINUTE_IN_SECONDS' ) ? MINUTE_IN_SECONDS : 60;
-		$key   = 'gr_rl_' . md5( $ip );
-		$count = (int) get_transient( $key );
-		if ( $count >= 10 ) {
+		$window = ( defined( 'MINUTE_IN_SECONDS' ) ? MINUTE_IN_SECONDS : 60 ) * 10;
+		$key    = 'gr_rl_' . md5( $ip );
+		$bucket = get_transient( $key );
+		if ( ! is_array( $bucket ) || empty( $bucket['start'] ) ) {
+			$bucket = array(
+				'count' => 0,
+				'start' => time(),
+			);
+		}
+		if ( $bucket['count'] >= 10 ) {
 			return true;
 		}
-		set_transient( $key, $count + 1, 10 * $ttl );
+		$bucket['count']++;
+		// Preserve the original window expiry (fixed window) so a paced client
+		// cannot keep renewing the TTL and slide past the limit indefinitely.
+		$remaining = max( 1, ( (int) $bucket['start'] + $window ) - time() );
+		set_transient( $key, $bucket, $remaining );
 		return false;
 	}
 
-	public function validate( array $in ) {
+	private function validate( array $in ) {
 		$errors = array();
 		if ( empty( $in['firstname'] ) ) {
 			$errors['firstname'] = __( 'Please enter your first name.', 'gated-resources' );
