@@ -70,7 +70,7 @@ class Protected_Files {
 		// Guard against path traversal: resolved path must stay inside base_dir.
 		$real_base = realpath( $this->base_dir() );
 		$real_file = realpath( $abs );
-		if ( ! $real_file || ! $real_base || strpos( $real_file, $real_base ) !== 0 || ! is_readable( $real_file ) ) {
+		if ( ! $real_file || ! $real_base || strpos( $real_file, $real_base . DIRECTORY_SEPARATOR ) !== 0 || ! is_readable( $real_file ) ) {
 			status_header( 404 );
 			wp_die( esc_html__( 'Resource not found.', 'gated-resources' ), 404 );
 		}
