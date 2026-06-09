@@ -1,0 +1,7 @@
+# WordPress / build artifacts
+*.log
+.DS_Store
+node_modules/
+vendor/
+/wp-content/
+composer.lock
