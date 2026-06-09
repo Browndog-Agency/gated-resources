@@ -40,6 +40,7 @@ class PDF_Upload {
 	public function handle() {
 		if ( ! current_user_can( 'edit_posts' ) || ! check_ajax_referer( 'gr_admin', 'nonce', false ) ) {
 			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'gated-resources' ) ), 403 );
+			return;
 		}
 		$post_id = isset( $_POST['post_id'] ) ? (int) $_POST['post_id'] : 0;
 		$file    = isset( $_FILES['file'] ) ? $_FILES['file'] : array();
@@ -47,11 +48,13 @@ class PDF_Upload {
 		$valid = $this->validate_file( (array) $file );
 		if ( is_wp_error( $valid ) ) {
 			wp_send_json_error( array( 'message' => $valid->get_error_message() ), 400 );
+			return;
 		}
 
 		$relative = $this->files->store( $file['tmp_name'], $file['name'] );
 		if ( is_wp_error( $relative ) ) {
 			wp_send_json_error( array( 'message' => $relative->get_error_message() ), 500 );
+			return;
 		}
 
 		if ( $post_id ) {
