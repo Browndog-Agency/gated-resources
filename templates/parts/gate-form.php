@@ -48,8 +48,10 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 		</label>
 	</div>
 
+	<?php /* Rendered explicitly by JS when the popup opens — not .cf-turnstile,
+	         so the api.js auto-scan never renders it while hidden. */ ?>
 	<?php if ( $turnstile_key ) : ?>
-		<div class="cf-turnstile" data-sitekey="<?php echo esc_attr( $turnstile_key ); ?>"></div>
+		<div class="gr-turnstile" data-sitekey="<?php echo esc_attr( $turnstile_key ); ?>"></div>
 	<?php endif; ?>
 
 	<?php if ( $privacy_url ) : ?>

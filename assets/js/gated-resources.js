@@ -1,11 +1,26 @@
 (function () {
 	var modal = document.getElementById('gr-modal');
 	var pendingUrl = '';
+	var turnstileWidgetId = null;
+
+	// Render the Turnstile widget on first open (api.js runs in explicit
+	// mode): rendering it while the popup is display:none makes the widget
+	// time out and re-render in a loop.
+	function ensureTurnstile() {
+		var el = modal.querySelector('.gr-turnstile');
+		if (!el || turnstileWidgetId !== null) { return; }
+		if (window.turnstile) {
+			turnstileWidgetId = window.turnstile.render(el, { sitekey: el.getAttribute('data-sitekey') });
+		} else {
+			setTimeout(ensureTurnstile, 150);
+		}
+	}
 
 	function openModal(url) {
 		pendingUrl = url || '';
 		modal.hidden = false;
 		document.body.classList.add('gr-modal-open');
+		ensureTurnstile();
 		var first = modal.querySelector('input[type="text"], input[type="email"]');
 		if (first) { first.focus(); }
 	}
@@ -59,7 +74,9 @@
 			if (pendingWin) { try { pendingWin.close(); } catch (e3) {} }
 			btn.disabled = false;
 			msg.textContent = message;
-			if (window.turnstile) { try { window.turnstile.reset(); } catch (e4) {} }
+			if (window.turnstile && turnstileWidgetId !== null) {
+				try { window.turnstile.reset(turnstileWidgetId); } catch (e4) {}
+			}
 		}
 
 		var fd = new FormData(form);

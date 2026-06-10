@@ -32,7 +32,10 @@ class Assets {
 				)
 			);
 			if ( $this->turnstile->is_configured() ) {
-				wp_enqueue_script( 'cf-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
+				// render=explicit: the widget lives in a hidden popup, and
+				// auto-render inside display:none times out and re-renders in
+				// a loop (console spam). We render it when the popup opens.
+				wp_enqueue_script( 'cf-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit', array(), null, true );
 			}
 		}
 	}
