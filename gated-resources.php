@@ -3,7 +3,7 @@
  * Plugin Name:       Gated Resources
  * Plugin URI:        https://github.com/Browndog-Agency/gated-resources
  * Description:       Gated PDF resource library with HubSpot lead capture, Cloudflare Turnstile, and a global 30-day unlock.
- * Version:           0.1.1
+ * Version:           0.1.2
  * Author:            Browndog Agency
  * Author URI:        https://browndog.agency
  * License:           GPL-2.0-or-later
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'GR_VERSION', '0.1.1' );
+define( 'GR_VERSION', '0.1.2' );
 define( 'GR_FILE', __FILE__ );
 define( 'GR_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GR_URL', plugin_dir_url( __FILE__ ) );
@@ -46,4 +46,13 @@ if ( class_exists( '\\YahnisElsts\\PluginUpdateChecker\\v5\\PucFactory' ) ) {
 		'gated-resources'
 	);
 	$gr_update_checker->setBranch( 'main' );
+
+	// Prefer the CI-built gated-resources.zip release asset so updates always
+	// install into the `gated-resources` folder (the auto-generated source zip
+	// uses a version-suffixed folder name). Falls back to the source zip if the
+	// asset is missing on a given release.
+	$gr_vcs_api = $gr_update_checker->getVcsApi();
+	if ( method_exists( $gr_vcs_api, 'enableReleaseAssets' ) ) {
+		$gr_vcs_api->enableReleaseAssets( '/gated-resources\.zip$/' );
+	}
 }

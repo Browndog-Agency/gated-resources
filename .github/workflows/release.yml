@@ -1,0 +1,49 @@
+name: Build release asset
+
+# On every version tag, build a clean distributable zip whose top-level folder
+# is always `gated-resources/` (never version-suffixed) and attach it to the
+# GitHub release. This guarantees manual uploads and the in-dashboard updater
+# install into the same `gated-resources` plugin folder every time.
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the tag
+        uses: actions/checkout@v4
+
+      - name: Assemble plugin into a gated-resources/ folder
+        run: |
+          set -euo pipefail
+          mkdir -p dist/gated-resources
+          # git archive emits exactly the tracked files (so the root composer
+          # vendor/ is excluded but the bundled lib/.../vendor/ IS included).
+          git archive --format=tar HEAD | tar -x -C dist/gated-resources
+          # Strip development-only files from the distributable.
+          cd dist/gated-resources
+          rm -rf tests docs .github
+          rm -f composer.json composer.lock phpunit.xml.dist .gitignore
+          cd ..
+          zip -rq ../gated-resources.zip gated-resources
+
+      - name: Attach gated-resources.zip to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Ensure a release exists for this tag, then (re)upload the asset.
+          if ! gh release view "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release create "${GITHUB_REF_NAME}" \
+              --repo "${GITHUB_REPOSITORY}" \
+              --title "${GITHUB_REF_NAME}" \
+              --notes "Automated release. Download gated-resources.zip below to install/update."
+          fi
+          gh release upload "${GITHUB_REF_NAME}" gated-resources.zip --clobber --repo "${GITHUB_REPOSITORY}"
