@@ -32,3 +32,18 @@ add_action(
 		( new \BrownDog\GatedResources\Plugin() )->boot();
 	}
 );
+
+/*
+ * Self-update from the public GitHub repo. Publish a GitHub Release with a
+ * semver tag matching the Version header above and WordPress shows an update.
+ */
+require_once GR_DIR . 'lib/plugin-update-checker/plugin-update-checker.php';
+
+if ( class_exists( '\\YahnisElsts\\PluginUpdateChecker\\v5\\PucFactory' ) ) {
+	$gr_update_checker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+		'https://github.com/Browndog-Agency/gated-resources/',
+		GR_FILE,
+		'gated-resources'
+	);
+	$gr_update_checker->setBranch( 'main' );
+}
