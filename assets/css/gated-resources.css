@@ -1,0 +1,75 @@
+/* ---- Brand tokens (confirm against live site) ---- */
+:root {
+	--gr-purple: #2D1B69;
+	--gr-teal:   #16C098;
+	--gr-bg:     #ECEAF6;
+	--gr-text:   #2D1B69;
+}
+
+/* ---- Grid ---- */
+.gr-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 40px 32px;
+}
+.gr-grid--cols-1 { grid-template-columns: 1fr; }
+.gr-grid--cols-2 { grid-template-columns: repeat(2, 1fr); }
+.gr-grid--cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 1024px) { .gr-grid, .gr-grid--cols-3, .gr-grid--cols-4 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px)  { .gr-grid, .gr-grid--cols-2, .gr-grid--cols-3, .gr-grid--cols-4 { grid-template-columns: 1fr; } }
+
+/* ---- Card (portrait cover) ---- */
+.gr-card__media {
+	display: block;
+	aspect-ratio: 3 / 4;
+	overflow: hidden;
+	border-radius: 4px;
+	background: var(--gr-bg);
+}
+.gr-card__media img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+.gr-card__title {
+	margin: 18px 0 14px;
+	font-size: 1.2rem;
+	line-height: 1.3;
+}
+.gr-card__title a { color: var(--gr-purple); text-decoration: none; }
+.gr-card__title a:hover { text-decoration: underline; }
+.gr-card__more {
+	display: inline-block;
+	color: var(--gr-purple);
+	font-weight: 700;
+	text-decoration: none;
+	padding-bottom: 6px;
+	border-bottom: 3px solid var(--gr-teal);
+}
+
+/* ---- Single ---- */
+.gr-single__inner { display: grid; grid-template-columns: 320px 1fr; gap: 40px; align-items: start; }
+.gr-single__cover img { width: 100%; border-radius: 6px; box-shadow: 0 8px 30px rgba(45,27,105,.15); }
+.gr-single__title { color: var(--gr-purple); }
+@media (max-width: 768px) { .gr-single__inner { grid-template-columns: 1fr; } }
+
+/* ---- Form ---- */
+.gr-form { max-width: 520px; }
+.gr-field { margin-bottom: 16px; }
+.gr-field label { display: block; font-weight: 600; margin-bottom: 6px; color: var(--gr-text); }
+.gr-field input[type="text"],
+.gr-field input[type="email"] { width: 100%; padding: 12px; border: 1px solid #c9c3e6; border-radius: 4px; }
+.gr-field--consent label { font-weight: 400; display: flex; gap: 8px; align-items: flex-start; }
+.gr-hp { position: absolute; left: -5000px; height: 0; overflow: hidden; }
+.gr-form__privacy { font-size: .85rem; color: #50575e; }
+.gr-form__msg { margin-top: 12px; color: #b32d2e; }
+
+.gr-btn { display: inline-block; cursor: pointer; border: 0; border-radius: 4px; padding: 14px 28px; font-weight: 700; text-decoration: none; }
+.gr-btn--primary { background: var(--gr-teal); color: #fff; }
+.gr-btn--primary:hover { filter: brightness(.95); }
+
+/* ---- Viewer ---- */
+.gr-viewer__actions { margin-bottom: 16px; }
+.gr-viewer__frame { width: 100%; height: 80vh; border: 1px solid #c9c3e6; border-radius: 4px; }
