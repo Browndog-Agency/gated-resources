@@ -100,4 +100,21 @@ final class FormProcessTest extends GR_TestCase {
 		$this->assertTrue( $res['ok'] );
 		$this->assertSame( 't', $res['unlock']['token'] );
 	}
+
+	public function test_gr_skip_hubspot_filter_unlocks_without_submitting() {
+		Functions\when( '__' )->returnArg( 1 );
+		Functions\when( 'is_email' )->justReturn( true );
+		Functions\when( 'get_transient' )->justReturn( 0 );
+		Functions\when( 'set_transient' )->justReturn( true );
+		\Brain\Monkey\Filters\expectApplied( 'gr_skip_hubspot' )->andReturn( true );
+		$turnstile = \Mockery::mock( Turnstile::class );
+		$turnstile->shouldReceive( 'verify' )->andReturn( true );
+		$hubspot = \Mockery::mock( HubSpot::class );
+		$hubspot->shouldNotReceive( 'submit' );
+		$gate = \Mockery::mock( Gate::class );
+		$gate->shouldReceive( 'create_unlock' )->once()->andReturn( array( 'token' => 't', 'expires' => 999 ) );
+
+		$res = ( new Form( $turnstile, $hubspot, $gate ) )->process( $this->input() );
+		$this->assertTrue( $res['ok'] );
+	}
 }

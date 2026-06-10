@@ -91,9 +91,17 @@ class Form {
 			'company'   => $in['company'],
 			'jobtitle'  => $in['jobtitle'],
 		);
-		$result = $this->hubspot->submit( $fields, ! empty( $in['consent'] ), $in['context'] ?? array() );
-		if ( is_wp_error( $result ) ) {
-			return $this->fail( 'hubspot' );
+
+		/**
+		 * Testing escape hatch: skip the HubSpot submission (the lead is NOT
+		 * recorded anywhere) while keeping the rest of the pipeline intact.
+		 * Never enable in production: add_filter( 'gr_skip_hubspot', '__return_true' );
+		 */
+		if ( ! apply_filters( 'gr_skip_hubspot', false ) ) {
+			$result = $this->hubspot->submit( $fields, ! empty( $in['consent'] ), $in['context'] ?? array() );
+			if ( is_wp_error( $result ) ) {
+				return $this->fail( 'hubspot' );
+			}
 		}
 
 		$unlock = $this->gate->create_unlock( $in['email'], ! empty( $in['consent'] ), $in['ip'] ?? '' );
