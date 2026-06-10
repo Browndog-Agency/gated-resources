@@ -114,24 +114,29 @@ body.post-type-archive-gated_resource {
 .gr-form__privacy { font-size: .85rem; color: #50575e; }
 .gr-form__msg { margin-top: 12px; color: #b32d2e; }
 
+/* !important guards: Elementor kit rules (.elementor-kit-N button) zero out
+   padding/radius/colours on bare <button> elements otherwise. */
 .gr-btn {
 	display: inline-block;
 	cursor: pointer;
-	border-radius: 8px;
-	padding: 14px 28px;
-	font-weight: 700;
+	border-radius: 8px !important;
+	padding: 14px 28px !important;
+	font-size: 16px !important;
+	font-weight: 700 !important;
+	line-height: 1.2 !important;
+	letter-spacing: 0 !important;
 	text-decoration: none;
 	transition: background-color .2s ease, color .2s ease;
 }
 .gr-btn--primary {
-	background: var(--gr-box-purple);
-	color: #fff;
-	border: 2px solid var(--gr-box-purple);
+	background-color: var(--gr-box-purple) !important;
+	color: #fff !important;
+	border: 2px solid var(--gr-box-purple) !important;
 }
 .gr-btn--primary:hover,
 .gr-btn--primary:focus-visible {
-	background: #fff;
-	color: var(--gr-box-purple);
+	background-color: #fff !important;
+	color: var(--gr-box-purple) !important;
 }
 
 /* ---- Gate popup ---- */
