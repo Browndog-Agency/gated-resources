@@ -17,6 +17,7 @@ class Settings {
 		'thumb_width'                => 600,
 		'thumb_dpi'                  => 150,
 		'max_upload_mb'              => 25,
+		'skip_hubspot'               => 0,
 	);
 
 	public static function get( $key, $default = null ) {
@@ -33,6 +34,19 @@ class Settings {
 	public function register() {
 		add_action( 'admin_menu', array( $this, 'menu' ) );
 		add_action( 'admin_init', array( $this, 'fields' ) );
+		add_action( 'admin_notices', array( $this, 'maybe_warn_test_mode' ) );
+	}
+
+	/**
+	 * Keep test mode loudly visible so it can't be forgotten before go-live.
+	 */
+	public function maybe_warn_test_mode() {
+		if ( self::get( 'skip_hubspot', 0 ) ) {
+			echo '<div class="notice notice-warning"><p><strong>'
+				. esc_html__( 'Gated Resources test mode is ON:', 'gated-resources' ) . '</strong> '
+				. esc_html__( 'form submissions are NOT being sent to HubSpot, so no leads are recorded. Turn this off in Resources → Settings before go-live.', 'gated-resources' )
+				. '</p></div>';
+		}
 	}
 
 	public function menu() {
@@ -63,6 +77,7 @@ class Settings {
 		$out['thumb_width']                = max( 200, (int) ( $input['thumb_width'] ?? 600 ) );
 		$out['thumb_dpi']                  = max( 72, (int) ( $input['thumb_dpi'] ?? 150 ) );
 		$out['max_upload_mb']              = max( 1, (int) ( $input['max_upload_mb'] ?? 25 ) );
+		$out['skip_hubspot']               = empty( $input['skip_hubspot'] ) ? 0 : 1;
 		return $out;
 	}
 
@@ -97,6 +112,14 @@ class Settings {
 						<td><input type="number" min="200" name="gr_settings[thumb_width]" value="<?php echo $f( 'thumb_width' ); ?>"></td></tr>
 					<tr><th><?php esc_html_e( 'Thumbnail Render DPI', 'gated-resources' ); ?></th>
 						<td><input type="number" min="72" name="gr_settings[thumb_dpi]" value="<?php echo $f( 'thumb_dpi' ); ?>"></td></tr>
+					<tr><th><?php esc_html_e( 'Test Mode', 'gated-resources' ); ?></th>
+						<td>
+							<label>
+								<input type="checkbox" name="gr_settings[skip_hubspot]" value="1" <?php checked( ! empty( $o['skip_hubspot'] ) ); ?>>
+								<?php esc_html_e( 'Skip HubSpot submission (testing only)', 'gated-resources' ); ?>
+							</label>
+							<p class="description"><?php esc_html_e( 'The gate works normally but leads are NOT recorded anywhere. A site-wide admin warning shows while this is on. Turn off before go-live.', 'gated-resources' ); ?></p>
+						</td></tr>
 				</table>
 				<?php submit_button(); ?>
 			</form>

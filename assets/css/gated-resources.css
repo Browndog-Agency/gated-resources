@@ -79,12 +79,13 @@ body.post-type-archive-gated_resource {
 	object-fit: cover;
 	display: block;
 }
+/* !important guards: Elementor/theme heading + link styles override these otherwise. */
 .gr-card__title {
 	margin: 18px 0 14px;
-	font-size: 25px;
+	font-size: 25px !important;
 	line-height: 1.3;
 }
-.gr-card__title a { color: var(--gr-purple); text-decoration: none; }
+.gr-card__title a { color: var(--gr-purple) !important; font-size: 25px !important; text-decoration: none; }
 .gr-card__title a:hover { text-decoration: underline; }
 .gr-card__more {
 	display: inline-block;

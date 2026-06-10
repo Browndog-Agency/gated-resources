@@ -95,9 +95,10 @@ class Form {
 		/**
 		 * Testing escape hatch: skip the HubSpot submission (the lead is NOT
 		 * recorded anywhere) while keeping the rest of the pipeline intact.
-		 * Never enable in production: add_filter( 'gr_skip_hubspot', '__return_true' );
+		 * Enabled via the "Test mode" checkbox in Resources > Settings, or
+		 * overridden in code with the gr_skip_hubspot filter.
 		 */
-		if ( ! apply_filters( 'gr_skip_hubspot', false ) ) {
+		if ( ! apply_filters( 'gr_skip_hubspot', (bool) Settings::get( 'skip_hubspot', 0 ) ) ) {
 			$result = $this->hubspot->submit( $fields, ! empty( $in['consent'] ), $in['context'] ?? array() );
 			if ( is_wp_error( $result ) ) {
 				return $this->fail( 'hubspot' );
