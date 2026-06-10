@@ -1,0 +1,20 @@
+{
+  "name": "browndog-agency/gated-resources",
+  "description": "Gated resource library for Bartec Municipal.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": ">=7.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.6",
+    "brain/monkey": "^2.6",
+    "mockery/mockery": "^1.6"
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "config": {
+    "allow-plugins": { "*": true }
+  }
+}

@@ -4,4 +4,4 @@
 node_modules/
 vendor/
 /wp-content/
-composer.lock
+.phpunit.result.cache
