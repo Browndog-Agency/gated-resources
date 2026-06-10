@@ -1,9 +1,15 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+use BrownDog\GatedResources\Gate;
+use BrownDog\GatedResources\Form;
+use BrownDog\GatedResources\Turnstile;
+use BrownDog\GatedResources\HubSpot;
 use BrownDog\GatedResources\Thumbnail;
 
 get_header();
 $thumbnail = new Thumbnail();
+$gate      = new Gate();
+$unlocked  = $gate->is_unlocked();
 ?>
 <main class="gr-archive">
 	<div class="gr-container">
@@ -22,6 +28,13 @@ $thumbnail = new Thumbnail();
 				?>
 			</div>
 			<div class="gr-pagination"><?php the_posts_pagination(); ?></div>
+
+			<?php
+			if ( ! $unlocked ) {
+				$form = new Form( new Turnstile(), new HubSpot(), $gate );
+				include GR_DIR . 'templates/parts/gate-modal.php';
+			}
+			?>
 		<?php else : ?>
 			<p><?php esc_html_e( 'No resources found.', 'gated-resources' ); ?></p>
 		<?php endif; ?>

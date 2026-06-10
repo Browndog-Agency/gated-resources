@@ -17,7 +17,7 @@ class Assets {
 	public function front() {
 		wp_enqueue_style( 'gated-resources', GR_URL . 'assets/css/gated-resources.css', array(), GR_VERSION );
 
-		if ( is_singular( CPT::SLUG ) ) {
+		if ( $this->needs_form_assets() ) {
 			wp_enqueue_script( 'gated-resources', GR_URL . 'assets/js/gated-resources.js', array(), GR_VERSION, true );
 			wp_localize_script(
 				'gated-resources',
@@ -34,6 +34,21 @@ class Assets {
 				wp_enqueue_script( 'cf-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
 			}
 		}
+	}
+
+	/**
+	 * The gate popup (form JS + Turnstile) is needed on any grid view:
+	 * the CPT archive, or a page running the [gated_resources] shortcode.
+	 */
+	private function needs_form_assets() {
+		if ( is_post_type_archive( CPT::SLUG ) || is_singular( CPT::SLUG ) ) {
+			return true;
+		}
+		if ( is_singular() ) {
+			$post = get_post();
+			return $post && has_shortcode( (string) $post->post_content, 'gated_resources' );
+		}
+		return false;
 	}
 
 	public function admin( $hook ) {

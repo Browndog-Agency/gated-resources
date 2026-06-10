@@ -5,6 +5,9 @@ class Shortcode {
 
 	private $thumbnail;
 
+	/** Render the gate popup at most once per page, even with multiple grids. */
+	private static $modal_rendered = false;
+
 	public function __construct( Thumbnail $thumbnail ) {
 		$this->thumbnail = $thumbnail;
 	}
@@ -41,6 +44,8 @@ class Shortcode {
 		}
 
 		$thumbnail = $this->thumbnail;
+		$gate      = new Gate();
+		$unlocked  = $gate->is_unlocked();
 		ob_start();
 		echo '<div class="gr-grid gr-grid--cols-' . (int) $a['columns'] . '">';
 		while ( $q->have_posts() ) {
@@ -50,6 +55,13 @@ class Shortcode {
 		}
 		echo '</div>';
 		wp_reset_postdata();
+
+		if ( ! $unlocked && ! self::$modal_rendered ) {
+			self::$modal_rendered = true;
+			$form = new Form( new Turnstile(), new HubSpot(), $gate );
+			include GR_DIR . 'templates/parts/gate-modal.php';
+		}
+
 		return ob_get_clean();
 	}
 }

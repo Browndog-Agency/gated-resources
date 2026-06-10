@@ -153,12 +153,16 @@ class Form {
 	}
 
 	/**
-	 * Render the gate form markup. Used by the single template.
+	 * Render the gate form markup. Used inside the gate popup on grid views.
+	 * Pass a post ID to attribute the HubSpot submission to that resource's
+	 * page; with no ID the archive is used as the page context.
 	 */
-	public function render( $post_id ) {
+	public function render( $post_id = 0 ) {
 		$turnstile_key = $this->turnstile->site_key();
 		$privacy_url   = Settings::get( 'privacy_url' );
 		$consent_label = Settings::get( 'consent_label' );
+		$page_uri      = $post_id ? get_permalink( $post_id ) : get_post_type_archive_link( CPT::SLUG );
+		$page_name     = $post_id ? get_the_title( $post_id ) : __( 'Resources', 'gated-resources' );
 		include GR_DIR . 'templates/parts/gate-form.php';
 	}
 }

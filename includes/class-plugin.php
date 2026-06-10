@@ -23,6 +23,6 @@ class Plugin {
 		$protected_files->register( $gate );
 		$gate->register();
 
-		add_filter( 'template_include', array( new Templates(), 'route' ) );
+		( new Templates() )->register();
 	}
 }

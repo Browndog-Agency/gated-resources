@@ -11,12 +11,15 @@
 - [ ] Non-PDF and oversize uploads are rejected with a clear message.
 
 ## Gating + HubSpot
-- [ ] Visiting a single resource while locked shows the form (with Turnstile).
+- [ ] While locked, clicking any card on the grid opens the gate popup (with Turnstile rendered).
+- [ ] Popup closes via the X button, the overlay, and the Escape key.
+- [ ] Visiting a single resource URL 301-redirects to the /resources/ archive.
 - [ ] Submitting with Turnstile passing creates a HubSpot contact (check HubSpot).
 - [ ] Consent ticked -> consent recorded in HubSpot; unticked -> no marketing consent.
-- [ ] Invalid email / missing fields show inline validation.
+- [ ] Invalid email / missing fields show inline validation (popup stays open).
 - [ ] Honeypot-filled submission is blocked.
-- [ ] After success, page reloads to the inline viewer + working download button.
+- [ ] After success, the clicked resource opens immediately; going back, all cards are direct links.
+- [ ] While unlocked, cards open PDFs directly in a new tab (no popup).
 
 ## File protection
 - [ ] Direct hit on the file's real `/uploads/gated-resources/...` URL is denied (403/blocked).

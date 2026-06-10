@@ -1,16 +1,17 @@
 <?php
 /**
- * @var int    $post_id
  * @var string $turnstile_key
  * @var string $privacy_url
  * @var string $consent_label
+ * @var string $page_uri   Page context reported to HubSpot.
+ * @var string $page_name  Page name reported to HubSpot.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 ?>
 <form class="gr-form" id="gr-form" novalidate
 	data-nonce="<?php echo esc_attr( wp_create_nonce( 'gr_form' ) ); ?>"
-	data-page="<?php echo esc_attr( get_permalink( $post_id ) ); ?>"
-	data-pagename="<?php echo esc_attr( get_the_title( $post_id ) ); ?>">
+	data-page="<?php echo esc_attr( $page_uri ); ?>"
+	data-pagename="<?php echo esc_attr( $page_name ); ?>">
 
 	<p class="gr-form__intro"><?php esc_html_e( 'Complete the form below to access this resource and our full library.', 'gated-resources' ); ?></p>
 
