@@ -14,6 +14,7 @@ $wpdb->query( "DROP TABLE IF EXISTS {$table}" );
 
 // 2. Delete options + scheduled cron.
 delete_option( 'gr_settings' );
+delete_option( 'gr_rewrite_version' );
 wp_clear_scheduled_hook( 'gr_prune_unlocks' );
 
 // 3. Remove protected + preview directories.
