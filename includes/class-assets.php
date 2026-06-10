@@ -26,6 +26,7 @@ class Assets {
 					'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 					'i18n'    => array(
 						'submitting' => __( 'Submitting…', 'gated-resources' ),
+						'preparing'  => __( 'Preparing your resource…', 'gated-resources' ),
 						'error'      => __( 'Something went wrong. Please try again.', 'gated-resources' ),
 					),
 				)

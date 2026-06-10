@@ -16,6 +16,8 @@ Cloudflare Turnstile anti-spam. PDFs are served through a protected endpoint.
 3. Add Resources (title, PDF upload, optional description). Optionally set a featured image as
    a thumbnail fallback.
 4. Show the grid at `/resources/` or with the shortcode: `[gated_resources count="9" columns="3"]`.
+5. To QA the gate before HubSpot is connected, enable **Test Mode** (Resources → Settings) —
+   leads are NOT recorded while it is on, and a site-wide admin warning shows. Turn off before go-live.
 
 ## nginx note (protected files)
 The protected directory ships an Apache `.htaccess` deny rule. On **nginx**, add:
@@ -26,6 +28,12 @@ location ~* /wp-content/uploads/gated-resources/ { deny all; return 403; }
 
 Files also live under an unguessable hashed path as defence in depth, and are only served
 through the gated PHP endpoint (`?gr_file=ID`).
+
+## Varnish / full-page caching note (required on Cloudways)
+The unlock is a `gr_access` cookie. Cache layers that strip unrecognised cookies from
+requests (e.g. **Cloudways Varnish**) will remove it before PHP runs, so the protected
+endpoint 403s even for unlocked visitors. Add a **cookie exclusion for `gr_access`**
+(Cloudways: Application → Varnish Settings), and purge the cache after changing it.
 
 ## Updating
 This plugin self-updates from `Browndog-Agency/gated-resources`. To release:

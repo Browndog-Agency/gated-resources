@@ -42,6 +42,26 @@
 		msg.textContent = GR_Front.i18n.submitting;
 		btn.disabled = true;
 
+		// Open the tab NOW, inside the submit gesture, so popup blockers allow
+		// it; we point it at the PDF once the server confirms the unlock, and
+		// close it again if the submission fails.
+		var pendingWin = null;
+		if (pendingUrl) {
+			pendingWin = window.open('', '_blank');
+			if (pendingWin) {
+				try {
+					pendingWin.document.write('<p style="font-family:sans-serif;padding:24px">' + GR_Front.i18n.preparing + '</p>');
+				} catch (e2) {}
+			}
+		}
+
+		function failed(message) {
+			if (pendingWin) { try { pendingWin.close(); } catch (e3) {} }
+			btn.disabled = false;
+			msg.textContent = message;
+			if (window.turnstile) { try { window.turnstile.reset(); } catch (e4) {} }
+		}
+
 		var fd = new FormData(form);
 		fd.append('action', 'gr_submit');
 		fd.append('nonce', form.getAttribute('data-nonce'));
@@ -54,27 +74,31 @@
 				if (res && res.success) {
 					if (pendingUrl) {
 						// Everything is unlocked now: flip the cards to direct
-						// links (covers back/bfcache restores), then open the
-						// resource the visitor originally clicked.
+						// links so the visitor can keep browsing this tab,
+						// close the popup, and open the clicked resource in
+						// the new tab.
 						document.querySelectorAll('.gr-gate-trigger').forEach(function (el) {
 							el.classList.remove('gr-gate-trigger');
 							el.setAttribute('target', '_blank');
 							el.setAttribute('rel', 'noopener');
 						});
 						closeModal();
-						window.location.assign(pendingUrl);
+						if (pendingWin) {
+							pendingWin.location.replace(pendingUrl);
+						} else {
+							// Popup blocked: fall back to opening in this tab.
+							window.location.assign(pendingUrl);
+						}
+						pendingUrl = '';
 					} else {
 						window.location.reload();
 					}
 				} else {
-					btn.disabled = false;
-					msg.textContent = (res && res.data && res.data.message) ? res.data.message : GR_Front.i18n.error;
-					if (window.turnstile) { try { window.turnstile.reset(); } catch (e2) {} }
+					failed((res && res.data && res.data.message) ? res.data.message : GR_Front.i18n.error);
 				}
 			})
 			.catch(function () {
-				btn.disabled = false;
-				msg.textContent = GR_Front.i18n.error;
+				failed(GR_Front.i18n.error);
 			});
 	});
 })();

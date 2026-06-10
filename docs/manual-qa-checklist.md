@@ -18,7 +18,9 @@
 - [ ] Consent ticked -> consent recorded in HubSpot; unticked -> no marketing consent.
 - [ ] Invalid email / missing fields show inline validation (popup stays open).
 - [ ] Honeypot-filled submission is blocked.
-- [ ] After success, the clicked resource opens immediately; going back, all cards are direct links.
+- [ ] After success, the clicked resource opens in a NEW tab; the popup closes on the original
+      tab and all cards there are direct links (no re-prompt).
+- [ ] On a failed submission (e.g. validation error), the pre-opened tab closes again.
 - [ ] While unlocked, cards open PDFs directly in a new tab (no popup).
 
 ## File protection
