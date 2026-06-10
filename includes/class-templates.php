@@ -18,8 +18,4 @@ class Templates {
 		}
 		return $template;
 	}
-
-	public static function gate() {
-		return new Gate();
-	}
 }

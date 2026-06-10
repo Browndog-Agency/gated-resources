@@ -56,14 +56,14 @@ class Protected_Files {
 	public function stream( $post_id, $disp = 'inline' ) {
 		if ( ! $this->gate->is_unlocked() ) {
 			status_header( 403 );
-			wp_die( esc_html__( 'You need to unlock this resource first.', 'gated-resources' ), 403 );
+			wp_die( esc_html__( 'You need to unlock this resource first.', 'gated-resources' ), '', array( 'response' => 403 ) );
 		}
 
 		$relative = get_post_meta( $post_id, '_gr_pdf_path', true );
 		$name     = get_post_meta( $post_id, '_gr_pdf_name', true ) ?: 'resource.pdf';
 		if ( ! $relative ) {
 			status_header( 404 );
-			wp_die( esc_html__( 'Resource not found.', 'gated-resources' ), 404 );
+			wp_die( esc_html__( 'Resource not found.', 'gated-resources' ), '', array( 'response' => 404 ) );
 		}
 
 		$abs = $this->absolute_path( $relative );
@@ -72,7 +72,7 @@ class Protected_Files {
 		$real_file = realpath( $abs );
 		if ( ! $real_file || ! $real_base || strpos( $real_file, $real_base . DIRECTORY_SEPARATOR ) !== 0 || ! is_readable( $real_file ) ) {
 			status_header( 404 );
-			wp_die( esc_html__( 'Resource not found.', 'gated-resources' ), 404 );
+			wp_die( esc_html__( 'Resource not found.', 'gated-resources' ), '', array( 'response' => 404 ) );
 		}
 
 		nocache_headers();

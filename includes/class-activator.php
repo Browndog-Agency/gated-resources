@@ -7,7 +7,9 @@ class Activator {
 		self::create_table();
 		self::create_dirs();
 		self::set_defaults();
-		( new CPT() )->register();
+		// Register the post type directly (not just the init hook) so its rewrite
+		// rules exist when we flush — init has already fired on the activation request.
+		( new CPT() )->register_post_type();
 		flush_rewrite_rules();
 		if ( ! wp_next_scheduled( 'gr_prune_unlocks' ) ) {
 			wp_schedule_event( time(), 'daily', 'gr_prune_unlocks' );

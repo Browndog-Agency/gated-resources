@@ -45,6 +45,13 @@ class PDF_Upload {
 		$post_id = isset( $_POST['post_id'] ) ? (int) $_POST['post_id'] : 0;
 		$file    = isset( $_FILES['file'] ) ? $_FILES['file'] : array();
 
+		// Per-post authorisation: a user with edit_posts must still own (be able
+		// to edit) the specific resource they are attaching the PDF to.
+		if ( $post_id && ! current_user_can( 'edit_post', $post_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'gated-resources' ) ), 403 );
+			return;
+		}
+
 		$valid = $this->validate_file( (array) $file );
 		if ( is_wp_error( $valid ) ) {
 			wp_send_json_error( array( 'message' => $valid->get_error_message() ), 400 );
