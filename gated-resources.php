@@ -3,7 +3,7 @@
  * Plugin Name:       Gated Resources
  * Plugin URI:        https://github.com/Browndog-Agency/gated-resources
  * Description:       Gated PDF resource library with HubSpot lead capture, Cloudflare Turnstile, and a global 30-day unlock.
- * Version:           0.1.3
+ * Version:           0.1.4
  * Author:            Browndog Agency
  * Author URI:        https://browndog.agency
  * License:           GPL-2.0-or-later
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'GR_VERSION', '0.1.3' );
+define( 'GR_VERSION', '0.1.4' );
 define( 'GR_FILE', __FILE__ );
 define( 'GR_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GR_URL', plugin_dir_url( __FILE__ ) );
