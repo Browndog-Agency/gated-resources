@@ -28,12 +28,8 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 		<input type="email" id="gr-email" name="email" required>
 	</div>
 	<div class="gr-field">
-		<label for="gr-company"><?php esc_html_e( 'Organisation / Council', 'gated-resources' ); ?> *</label>
+		<label for="gr-company"><?php esc_html_e( 'Council name', 'gated-resources' ); ?> *</label>
 		<input type="text" id="gr-company" name="company" required>
-	</div>
-	<div class="gr-field">
-		<label for="gr-jobtitle"><?php esc_html_e( 'Job title', 'gated-resources' ); ?> *</label>
-		<input type="text" id="gr-jobtitle" name="jobtitle" required>
 	</div>
 
 	<?php /* Honeypot: hidden from humans, tempting to bots. */ ?>

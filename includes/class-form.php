@@ -60,9 +60,6 @@ class Form {
 		if ( empty( $in['company'] ) ) {
 			$errors['company'] = __( 'Please enter your organisation.', 'gated-resources' );
 		}
-		if ( empty( $in['jobtitle'] ) ) {
-			$errors['jobtitle'] = __( 'Please enter your job title.', 'gated-resources' );
-		}
 		return $errors;
 	}
 
@@ -89,7 +86,6 @@ class Form {
 			'lastname'  => $in['lastname'],
 			'email'     => $in['email'],
 			'company'   => $in['company'],
-			'jobtitle'  => $in['jobtitle'],
 		);
 
 		/**
@@ -123,7 +119,6 @@ class Form {
 			'lastname'  => isset( $_POST['lastname'] ) ? sanitize_text_field( wp_unslash( $_POST['lastname'] ) ) : '',
 			'email'     => isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '',
 			'company'   => isset( $_POST['company'] ) ? sanitize_text_field( wp_unslash( $_POST['company'] ) ) : '',
-			'jobtitle'  => isset( $_POST['jobtitle'] ) ? sanitize_text_field( wp_unslash( $_POST['jobtitle'] ) ) : '',
 			'consent'   => ! empty( $_POST['consent'] ),
 			'context'   => array(
 				'hutk'     => isset( $_COOKIE['hubspotutk'] ) ? sanitize_text_field( wp_unslash( $_COOKIE['hubspotutk'] ) ) : '',

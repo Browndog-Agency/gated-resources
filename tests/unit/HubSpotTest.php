@@ -27,6 +27,13 @@ final class HubSpotTest extends GR_TestCase {
 		$this->assertSame( 7, $payload['legalConsentOptions']['consent']['communications'][0]['subscriptionTypeId'] );
 	}
 
+	public function test_consent_omits_communications_when_no_subscription_id() {
+		Functions\when( 'get_option' )->justReturn( array( 'consent_label' => 'Yes please' ) );
+		$payload = ( new HubSpot() )->build_payload( array( 'email' => 'a@b.com' ), true );
+		$this->assertTrue( $payload['legalConsentOptions']['consent']['consentToProcess'] );
+		$this->assertArrayNotHasKey( 'communications', $payload['legalConsentOptions']['consent'] );
+	}
+
 	public function test_payload_includes_context_when_present() {
 		Functions\when( 'get_option' )->justReturn( array() );
 		$payload = ( new HubSpot() )->build_payload(

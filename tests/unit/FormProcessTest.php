@@ -19,7 +19,6 @@ final class FormProcessTest extends GR_TestCase {
 				'lastname'  => 'Jones',
 				'email'     => 'ann@council.gov',
 				'company'   => 'Council',
-				'jobtitle'  => 'Officer',
 				'consent'   => false,
 				'context'   => array(),
 			),

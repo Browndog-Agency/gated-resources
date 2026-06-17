@@ -3,7 +3,18 @@ namespace BrownDog\GatedResources;
 
 class HubSpot {
 
-	const ENDPOINT = 'https://api.hsforms.com/submissions/v3/integration/submit/%s/%s';
+	const ENDPOINT = 'https://%s/submissions/v3/integration/submit/%s/%s';
+
+	/**
+	 * Forms submission host for the portal's data region. EU portals (the embed
+	 * snippet shows data-region="eu1") must use api-eu1; the US default rejects
+	 * them. Anything other than eu1 falls back to the US host.
+	 */
+	private function host() {
+		return 'eu1' === Settings::get( 'hubspot_region', 'na1' )
+			? 'api-eu1.hsforms.com'
+			: 'api.hsforms.com';
+	}
 
 	public function build_payload( array $fields, $consent, array $context = array() ) {
 		$hs_fields = array();
@@ -33,19 +44,23 @@ class HubSpot {
 		if ( $consent ) {
 			$label  = Settings::get( 'consent_label', 'I agree to be contacted.' );
 			$sub_id = (int) Settings::get( 'hs_consent_subscription_id', 0 );
-			$payload['legalConsentOptions'] = array(
-				'consent' => array(
-					'consentToProcess' => true,
-					'text'             => $label,
-					'communications'   => array(
-						array(
-							'value'              => true,
-							'subscriptionTypeId' => $sub_id,
-							'text'               => $label,
-						),
-					),
-				),
+			$consent_block = array(
+				'consentToProcess' => true,
+				'text'             => $label,
 			);
+			// Only attach the communications opt-in when a real subscription type
+			// is configured. Sending subscriptionTypeId 0 (the unset default) makes
+			// HubSpot reject the whole submission with an invalid-subscription error.
+			if ( $sub_id > 0 ) {
+				$consent_block['communications'] = array(
+					array(
+						'value'              => true,
+						'subscriptionTypeId' => $sub_id,
+						'text'               => $label,
+					),
+				);
+			}
+			$payload['legalConsentOptions'] = array( 'consent' => $consent_block );
 		}
 
 		return $payload;
@@ -58,7 +73,7 @@ class HubSpot {
 			return new \WP_Error( 'gr_hs_config', __( 'HubSpot is not configured.', 'gated-resources' ) );
 		}
 
-		$url  = sprintf( self::ENDPOINT, rawurlencode( $portal ), rawurlencode( $guid ) );
+		$url  = sprintf( self::ENDPOINT, $this->host(), rawurlencode( $portal ), rawurlencode( $guid ) );
 		$resp = wp_remote_post(
 			$url,
 			array(

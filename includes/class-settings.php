@@ -8,6 +8,7 @@ class Settings {
 	const DEFAULTS = array(
 		'hubspot_portal_id'          => '',
 		'hubspot_form_guid'          => '',
+		'hubspot_region'             => 'eu1',
 		'turnstile_site_key'         => '',
 		'turnstile_secret_key'       => '',
 		'unlock_days'                => 30,
@@ -68,6 +69,7 @@ class Settings {
 		$out = array();
 		$out['hubspot_portal_id']          = sanitize_text_field( $input['hubspot_portal_id'] ?? '' );
 		$out['hubspot_form_guid']          = sanitize_text_field( $input['hubspot_form_guid'] ?? '' );
+		$out['hubspot_region']             = 'eu1' === ( $input['hubspot_region'] ?? '' ) ? 'eu1' : 'na1';
 		$out['turnstile_site_key']         = sanitize_text_field( $input['turnstile_site_key'] ?? '' );
 		$out['turnstile_secret_key']       = sanitize_text_field( $input['turnstile_secret_key'] ?? '' );
 		$out['unlock_days']                = max( 1, (int) ( $input['unlock_days'] ?? 30 ) );
@@ -94,6 +96,15 @@ class Settings {
 						<td><input type="text" name="gr_settings[hubspot_portal_id]" value="<?php echo $f( 'hubspot_portal_id' ); ?>" class="regular-text"></td></tr>
 					<tr><th><?php esc_html_e( 'HubSpot Form GUID', 'gated-resources' ); ?></th>
 						<td><input type="text" name="gr_settings[hubspot_form_guid]" value="<?php echo $f( 'hubspot_form_guid' ); ?>" class="regular-text"></td></tr>
+					<tr><th><?php esc_html_e( 'HubSpot Data Region', 'gated-resources' ); ?></th>
+						<td>
+							<?php $region = $f( 'hubspot_region' ); ?>
+							<select name="gr_settings[hubspot_region]">
+								<option value="eu1" <?php selected( $region, 'eu1' ); ?>><?php esc_html_e( 'EU (eu1)', 'gated-resources' ); ?></option>
+								<option value="na1" <?php selected( $region, 'na1' ); ?>><?php esc_html_e( 'US (na1)', 'gated-resources' ); ?></option>
+							</select>
+							<p class="description"><?php esc_html_e( 'Match the data-region in the HubSpot embed snippet. Bartec\'s form is eu1.', 'gated-resources' ); ?></p>
+						</td></tr>
 					<tr><th><?php esc_html_e( 'Turnstile Site Key', 'gated-resources' ); ?></th>
 						<td><input type="text" name="gr_settings[turnstile_site_key]" value="<?php echo $f( 'turnstile_site_key' ); ?>" class="regular-text"></td></tr>
 					<tr><th><?php esc_html_e( 'Turnstile Secret Key', 'gated-resources' ); ?></th>
