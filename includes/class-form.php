@@ -18,7 +18,8 @@ class Form {
 		add_action( 'wp_ajax_nopriv_gr_submit', array( $this, 'handle' ) );
 	}
 
-	private function fail( $code, $errors = array() ) {
+	private function fail( $code, $errors = array(), $log_detail = array() ) {
+		Logger::log( 'fail:' . $code, array_filter( array( 'errors' => $errors ) ) + $log_detail );
 		return array( 'ok' => false, 'code' => $code, 'errors' => $errors );
 	}
 
@@ -97,7 +98,16 @@ class Form {
 		if ( ! apply_filters( 'gr_skip_hubspot', (bool) Settings::get( 'skip_hubspot', 0 ) ) ) {
 			$result = $this->hubspot->submit( $fields, ! empty( $in['consent'] ), $in['context'] ?? array() );
 			if ( is_wp_error( $result ) ) {
-				return $this->fail( 'hubspot' );
+				return $this->fail(
+					'hubspot',
+					array(),
+					array(
+						'error_code' => $result->get_error_code(),
+						'message'    => $result->get_error_message(),
+						'data'       => $result->get_error_data(),
+						'fields'     => array_keys( $fields ),
+					)
+				);
 			}
 		}
 

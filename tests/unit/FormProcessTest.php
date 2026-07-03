@@ -28,6 +28,7 @@ final class FormProcessTest extends GR_TestCase {
 
 	public function test_honeypot_filled_fails() {
 		Functions\when( '__' )->returnArg( 1 );
+		Functions\when( 'get_option' )->justReturn( array() );
 		$form = new Form( \Mockery::mock( Turnstile::class ), \Mockery::mock( HubSpot::class ), \Mockery::mock( Gate::class ) );
 		$res  = $form->process( $this->input( array( 'hp' => 'bot' ) ) );
 		$this->assertFalse( $res['ok'] );
@@ -39,6 +40,7 @@ final class FormProcessTest extends GR_TestCase {
 		Functions\when( 'is_email' )->justReturn( true );
 		Functions\when( 'get_transient' )->justReturn( 0 );
 		Functions\when( 'set_transient' )->justReturn( true );
+		Functions\when( 'get_option' )->justReturn( array() );
 		$turnstile = \Mockery::mock( Turnstile::class );
 		$turnstile->shouldReceive( 'verify' )->andReturn( false );
 		$hubspot = \Mockery::mock( HubSpot::class );
@@ -55,6 +57,7 @@ final class FormProcessTest extends GR_TestCase {
 		Functions\when( 'is_email' )->justReturn( false );
 		Functions\when( 'get_transient' )->justReturn( 0 );
 		Functions\when( 'set_transient' )->justReturn( true );
+		Functions\when( 'get_option' )->justReturn( array() );
 		$turnstile = \Mockery::mock( Turnstile::class );
 		$turnstile->shouldReceive( 'verify' )->andReturn( true );
 

@@ -19,6 +19,7 @@ class Settings {
 		'thumb_dpi'                  => 150,
 		'max_upload_mb'              => 25,
 		'skip_hubspot'               => 0,
+		'debug_log'                  => 0,
 	);
 
 	public static function get( $key, $default = null ) {
@@ -80,6 +81,10 @@ class Settings {
 		$out['thumb_dpi']                  = max( 72, (int) ( $input['thumb_dpi'] ?? 150 ) );
 		$out['max_upload_mb']              = max( 1, (int) ( $input['max_upload_mb'] ?? 25 ) );
 		$out['skip_hubspot']               = empty( $input['skip_hubspot'] ) ? 0 : 1;
+		$out['debug_log']                  = empty( $input['debug_log'] ) ? 0 : 1;
+		if ( ! empty( $input['clear_debug_log'] ) ) {
+			Logger::clear();
+		}
 		return $out;
 	}
 
@@ -131,10 +136,57 @@ class Settings {
 							</label>
 							<p class="description"><?php esc_html_e( 'The gate works normally but leads are NOT recorded anywhere. A site-wide admin warning shows while this is on. Turn off before go-live.', 'gated-resources' ); ?></p>
 						</td></tr>
+					<tr><th><?php esc_html_e( 'Debug Logging', 'gated-resources' ); ?></th>
+						<td>
+							<label>
+								<input type="checkbox" name="gr_settings[debug_log]" value="1" <?php checked( ! empty( $o['debug_log'] ) ); ?>>
+								<?php esc_html_e( 'Log failed form submissions (view below)', 'gated-resources' ); ?>
+							</label>
+							<p class="description"><?php esc_html_e( 'Records the last 20 failures including HubSpot\'s full error response. For diagnosing issues — turn off once resolved.', 'gated-resources' ); ?></p>
+							<?php if ( Logger::entries() ) : ?>
+								<label style="display:block;margin-top:6px;">
+									<input type="checkbox" name="gr_settings[clear_debug_log]" value="1">
+									<?php esc_html_e( 'Clear the log on save', 'gated-resources' ); ?>
+								</label>
+							<?php endif; ?>
+						</td></tr>
 				</table>
 				<?php submit_button(); ?>
 			</form>
+			<?php $this->render_debug_log(); ?>
 		</div>
+		<?php
+	}
+
+	private function render_debug_log() {
+		$entries = Logger::entries();
+		if ( ! $entries && ! self::get( 'debug_log', 0 ) ) {
+			return;
+		}
+		?>
+		<h2><?php esc_html_e( 'Debug Log', 'gated-resources' ); ?></h2>
+		<?php if ( ! $entries ) : ?>
+			<p><?php esc_html_e( 'No entries yet. Failed submissions will appear here while debug logging is on.', 'gated-resources' ); ?></p>
+			<?php return; ?>
+		<?php endif; ?>
+		<table class="widefat striped" style="max-width:900px;">
+			<thead><tr>
+				<th style="width:160px;"><?php esc_html_e( 'Time', 'gated-resources' ); ?></th>
+				<th style="width:120px;"><?php esc_html_e( 'Event', 'gated-resources' ); ?></th>
+				<th><?php esc_html_e( 'Detail', 'gated-resources' ); ?></th>
+			</tr></thead>
+			<tbody>
+			<?php foreach ( $entries as $e ) : ?>
+				<tr>
+					<td><?php echo esc_html( wp_date( 'Y-m-d H:i:s', (int) ( $e['time'] ?? 0 ) ) ); ?></td>
+					<td><code><?php echo esc_html( $e['event'] ?? '' ); ?></code></td>
+					<td><pre style="margin:0;white-space:pre-wrap;word-break:break-word;"><?php
+						echo esc_html( wp_json_encode( $e['detail'] ?? array(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+					?></pre></td>
+				</tr>
+			<?php endforeach; ?>
+			</tbody>
+		</table>
 		<?php
 	}
 }
